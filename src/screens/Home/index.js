@@ -3,11 +3,24 @@ import React, {useState, useEffect} from "react"
 import {MdAddShoppingCart} from "react-icons/md"
 import {formatPrice} from "../../util/format"
 import api from "../../services/api"
+import {useDispatch, useSelector} from "react-redux"
 import {ProductList} from "./styles"
 
-export default function Home(){
+import * as CartActions from "../../store/modules/cart/actions"
 
+export default function Home(){
     const [products, setProducts] = useState([])
+
+    const amount = useSelector(state => 
+        state.cart.reduce((sumAmount,product) => {
+            sumAmount[product.id] = product.amount;
+
+            return sumAmount;
+        }, {})
+        );
+
+    //responsável por disparar ação
+    const dispatch = useDispatch();
 
     const getProducts = async () => {
         const response = await api.get('products')
@@ -23,7 +36,10 @@ export default function Home(){
         getProducts();
     }, [])
 
-    
+    function handleAddProduct(id){
+        dispatch(CartActions.addToCartRequest(id));
+    }
+
     return(
         <ProductList>
             {products.map(product => (
@@ -34,7 +50,7 @@ export default function Home(){
                     />
                     <strong>{product.title}</strong>
                     <span>{product.priceFormatted}</span>
-                    <button type="button">
+                    <button type="button" onClick={() => handleAddProduct(product.id)}>
                         <div>
                             <MdAddShoppingCart size={16} color="#fff" /> 3
                         </div>
