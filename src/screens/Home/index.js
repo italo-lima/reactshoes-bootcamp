@@ -11,6 +11,7 @@ import * as CartActions from "../../store/modules/cart/actions"
 export default function Home(){
     const [products, setProducts] = useState([])
 
+    //useSelector se comunida com o store para buscar state
     const amount = useSelector(state => 
         state.cart.reduce((sumAmount,product) => {
             sumAmount[product.id] = product.amount;
@@ -28,7 +29,7 @@ export default function Home(){
             ...product,
             priceFormatted: formatPrice(product.price)
         }))
-        
+
         setProducts(data)
     }
 
@@ -36,8 +37,9 @@ export default function Home(){
         getProducts();
     }, [])
 
-    function handleAddProduct(id){
-        dispatch(CartActions.addToCartRequest(id));
+    function handleAddProduct(product){
+        //dispara a action
+        dispatch(CartActions.addToCartRequest(product));
     }
 
     return(
@@ -50,9 +52,10 @@ export default function Home(){
                     />
                     <strong>{product.title}</strong>
                     <span>{product.priceFormatted}</span>
-                    <button type="button" onClick={() => handleAddProduct(product.id)}>
+                    <button type="button" onClick={() => handleAddProduct(product)}>
                         <div>
-                            <MdAddShoppingCart size={16} color="#fff" /> 3
+                            <MdAddShoppingCart size={16} color="#fff" /> 
+                            {amount[product.id] || 0}
                         </div>
 
                         <span>ADICIONAR AO CARRINHO</span>
